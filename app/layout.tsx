@@ -7,8 +7,29 @@ import {
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
+import { dark } from '@clerk/themes'
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import CustomUserButton from "../components/customUserButton";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ModeToggle } from "@/components/toggleModeButton";
+import Link from "next/link";
+function Header() {
+  return (
+    <header style={{ display: 'flex', justifyContent: 'space-between', padding: 20 }}>
+      <Link href="/"><h1 className="text-xl font-extrabold">Commet</h1></Link>
+      <div className="flex gap-10">
+        <ModeToggle />
+        <SignedIn>
+          <CustomUserButton />
+        </SignedIn>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+      </div>
+    </header>
+  )
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,12 +52,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
+    <ClerkProvider appearance={{
+      baseTheme: dark,
+    }}>
+      <html lang="en" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
