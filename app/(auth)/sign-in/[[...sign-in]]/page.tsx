@@ -1,5 +1,16 @@
-import { SignIn } from '@clerk/nextjs'
+'use client'
 
-export default function Page() {
-    return <SignIn />
+import { SignIn, useUser } from '@clerk/nextjs'
+
+export default function Home() {
+    const { user } = useUser()
+
+    if (!user) return <SignIn
+        withSignUp={false}
+        path="/sign-in"
+        routing="path"
+        signUpUrl="/sign-up"
+    />
+
+    return <div>Welcome!</div>
 }
