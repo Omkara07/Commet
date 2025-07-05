@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "uploadthing/tw/v4";
+@source "../node_modules/@uploadthing/react/dist";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -119,4 +122,31 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+/* styles/uploadthing-isolated.css */
+.uploadthing-container {
+  isolation: isolate;
+}
+
+@layer uploadthing {
+  /* Scoped version of UploadThing styles */
+  .uploadthing-container .ut-container {
+    all: unset;
+    position: relative;
+  }
+  
+  .uploadthing-container .ut-dropzone {
+    all: unset;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    border: 2px dashed var(--border);
+    background: var(--background);
+    transition: all 0.2s ease;
+  }
+  
+  .uploadthing-container .ut-dropzone:hover {
+    border-color: var(--ring);
+  }
+  
+  /* Add other necessary UploadThing style overrides */
 }

@@ -14,6 +14,10 @@ import CustomUserButton from "../components/customUserButton";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ModeToggle } from "@/components/toggleModeButton";
 import Link from "next/link";
+
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 function Header() {
   return (
     <header style={{ display: 'flex', justifyContent: 'space-between', padding: 20 }}>
@@ -59,6 +63,9 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          <NextSSRPlugin
+            routerConfig={extractRouterConfig(ourFileRouter)}
+          />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
