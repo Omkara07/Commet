@@ -8,6 +8,8 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import NavigationItem from './navigation-item';
 import { cn } from '@/lib/utils';
+import { ModeToggle } from '../toggleModeButton';
+import { UserButton } from '@clerk/nextjs';
 
 const NavigationSidebar = async () => {
     const profile = await CurrentProfile();
@@ -29,7 +31,7 @@ const NavigationSidebar = async () => {
             <div className='flex w-10'>
                 <Separator className="border-b-[2px] bg-zinc-300 rounded-md dark:bg-zinc-700 mx-auto" />
             </div>
-            <ScrollArea>
+            <ScrollArea className='h-full'>
                 {
                     servers.map((server) => (
                         <div key={server.id} className='w-full mb-4 flex justify-center'>
@@ -38,6 +40,17 @@ const NavigationSidebar = async () => {
                     ))
                 }
             </ScrollArea>
+            <div className='flex flex-col w-full gap-y-4 pb-3 items-center mx-auto'>
+                <ModeToggle />
+                <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                        elements: {
+                            userButtonAvatarBox: "h-[48px] w-[48px]"
+                        }
+                    }}
+                />
+            </div>
         </div>
     )
 }

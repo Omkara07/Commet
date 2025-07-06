@@ -32,7 +32,7 @@ const NavigationItem = ({ serverId, imageUrl, name }: Props) => {
                     "relative group flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden",
                     params?.serverId === serverId && "bg-primary/10 text-primary rounded-[16px]"
                 )} >
-                    <Image src={imageUrl} alt={name} fill />
+                    <Image src={imageUrl} alt={name} fill className='object-cover' />
                 </div>
             </button>
         </ActionTooltip >

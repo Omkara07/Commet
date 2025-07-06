@@ -1,4 +1,3 @@
-import Header from '@/components/headers/header'
 import NavigationSidebar from '@/components/navigation/navigation-sidebar'
 import React from 'react'
 
@@ -9,7 +8,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 <NavigationSidebar />
             </div>
             <main className='h-full md:pl-[72px]'>
-                <Header />
                 {children}
             </main>
 
