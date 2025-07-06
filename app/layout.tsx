@@ -18,22 +18,6 @@ import Link from "next/link";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
-function Header() {
-  return (
-    <header style={{ display: 'flex', justifyContent: 'space-between', padding: 20 }}>
-      <Link href="/"><h1 className="text-xl font-extrabold">Commet</h1></Link>
-      <div className="flex gap-10">
-        <ModeToggle />
-        <SignedIn>
-          <CustomUserButton />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
-      </div>
-    </header>
-  )
-}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,7 +56,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Header />
             {children}
           </ThemeProvider>
         </body>
