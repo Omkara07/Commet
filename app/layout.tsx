@@ -19,6 +19,7 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
 import ModalProvider from "@/components/providers/modal-provider";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,6 +60,7 @@ export default function RootLayout({
           >
             <ModalProvider />
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>
