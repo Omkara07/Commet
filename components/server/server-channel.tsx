@@ -6,6 +6,7 @@ import { ServerWithMembersWithProfiles } from "@/types"
 import { Edit2, Hash, Lock, Mic, Trash, Video } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import ActionTooltip from "../action-tooltip"
+import { useModal } from "@/hooks/use-model-store"
 
 interface ServerChannelProps {
     channel: Channel,
@@ -21,6 +22,7 @@ const IconMap = {
 const ServerChannel = ({ channel, role, server }: ServerChannelProps) => {
     const router = useRouter();
     const params = useParams();
+    const { onOpen } = useModal();
 
     return (
         <button className="group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
@@ -34,10 +36,10 @@ const ServerChannel = ({ channel, role, server }: ServerChannelProps) => {
                 channel.name !== "general" && role !== MemberRole.GUEST && (
                     <div className="ml-auto flex items-center gap-x-2">
                         <ActionTooltip label="Edit">
-                            <Edit2 className="hidden group-hover:block h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                            <Edit2 onClick={() => onOpen("editChannel", { channel, server })} className="hidden group-hover:block h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                         </ActionTooltip>
                         <ActionTooltip label="Delete">
-                            <Trash className="hidden group-hover:block h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                            <Trash onClick={() => onOpen("deleteChannel", { channel, server })} className="hidden group-hover:block h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                         </ActionTooltip>
                     </div>
                 )
