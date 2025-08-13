@@ -24,8 +24,12 @@ const ServerMember = ({
     const router = useRouter();
     const params = useParams();
 
+    const onClick = () => {
+        router.push(`/servers/${server.id}/conversations/${member.id}`);
+    }
+
     return (
-        <button className={cn("group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition", params?.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700")}>
+        <button onClick={onClick} className={cn("group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition", params?.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700")}>
             <div className="flex items-center gap-x-2">
                 <UserAvatar url={member.profile.imageUrl} fallbackData={member.profile.name} className="h-7 w-7 md:w-7 md:h-7" />
                 <div className="flex items-center gap-x-1 gap-y-1">

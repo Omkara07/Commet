@@ -26,7 +26,7 @@ const NavigationSidebar = async () => {
     });
 
     return (
-        <div className='space-y-4 flex flex-col h-full items-center py-8 bg-[#E3E5E8] dark:bg-black w-full text-primary'>
+        <div className='space-y-4 flex flex-col h-full items-center py-8 bg-[#E3E5E8] dark:bg-black lg::w-full text-primary'>
             <NavigationAction />
             <div className='flex w-10'>
                 <Separator className="border-b-[2px] bg-zinc-300 rounded-md dark:bg-zinc-700 mx-auto" />
@@ -46,7 +46,7 @@ const NavigationSidebar = async () => {
                     afterSignOutUrl="/"
                     appearance={{
                         elements: {
-                            userButtonAvatarBox: "h-[48px] w-[48px]"
+                            userButtonAvatarBox: "md:h-[48px] md:w-[48px]"
                         }
                     }}
                 />

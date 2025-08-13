@@ -20,6 +20,7 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
 import ModalProvider from "@/components/providers/modal-provider";
 import { Toaster } from "sonner";
+import { SocketProvider } from "@/components/providers/socket-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,9 +46,9 @@ export default function RootLayout({
     <ClerkProvider appearance={{
       baseTheme: dark,
     }}>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning className="h-full">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
         >
           <NextSSRPlugin
             routerConfig={extractRouterConfig(ourFileRouter)}
@@ -58,8 +59,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ModalProvider />
-            {children}
+            <SocketProvider>
+              <ModalProvider />
+              {children}
+            </SocketProvider>
             <Toaster />
           </ThemeProvider>
         </body>
