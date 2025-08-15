@@ -34,11 +34,19 @@ const ChannelIdPage = async ({
         }
     })
     return (
-        <div className="flex flex-col h-full text-primary w-full dark:bg-black bg-white p-0">
+        <div className="flex flex-col h-screen text-primary w-full dark:bg-black bg-white p-0">
             <ChatHeader serverId={channel?.serverId || ""} name={channel?.name || ""} type={"channel"} />
             <div className="flex-1 overflow-y-auto p-4">Future messages</div>
-            <div className="mt-auto">
-                <ChatInput />
+            <div className="">
+                <ChatInput
+                    name={channel?.name || ""}
+                    apiUrl="/api/socket/messages"
+                    query={{
+                        channelId: channelId,
+                        serverId: serverId
+                    }}
+                    type="channel"
+                />
             </div>
         </div>
     );
