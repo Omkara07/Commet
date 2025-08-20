@@ -6,6 +6,7 @@ import { Loader2, ServerCrash } from "lucide-react";
 import { Fragment } from "react";
 import ChatItem from "./chat-item";
 import { format } from "date-fns";
+import { useChatSocket } from "@/hooks/use-chat-socket";
 
 interface Props {
     name: string,
@@ -39,8 +40,12 @@ const ChatMessages = ({
     type
 }: Props) => {
     const queryKey = `chat=${chatId}`;
+    const addKey = `chat:${chatId}:messages`;
+    const updateKey = `chat:${chatId}:messages:update`;
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({ apiUrl, queryKey, paramKey, paramValue });
+
+    useChatSocket({ addKey, updateKey, queryKey });
 
     if (status === "pending") {
         return (

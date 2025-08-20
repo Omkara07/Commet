@@ -10,6 +10,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import { toast } from "sonner";
+import qs from "query-string";
+import { useModal } from "@/hooks/use-model-store";
+import { useParams, useRouter } from "next/navigation";
 
 interface Props {
     id: string;
@@ -49,6 +53,11 @@ const ChatItem = ({
     const [fileType, setFileType] = useState<"image" | "pdf" | "unknown" | null>(null);
     const [fileName, setFileName] = useState(fileUrl ? fileUrl.split("/").pop() || "file" : "");
     const [fileSize, setFileSize] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const { onOpen } = useModal();
+    const router = useRouter();
+    const params = useParams();
 
     const isAdmin = currentmember.role === MemberRole.ADMIN;
     const isModerator = currentmember.role === MemberRole.MODERATOR;
@@ -91,29 +100,54 @@ const ChatItem = ({
         }
     }, [fileUrl]);
 
+    // keyboard shortcut for editing (Esc to exit/cancle)
+    useEffect(() => {
+        const handleKeyDown = (e: any) => {
+            if (e.key === "Escape") {
+                setEditingContent(content);
+                setIsEditing(false);
+            }
+        }
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
     const handleUpdate = async () => {
         try {
-            await axios.patch(`${socketUrl}/messages/${id}`, { content: editingContent }, { params: socketQuery });
+            setIsLoading(true);
+            if (editingContent.length < 1) return toast.error("Message cannot be empty");
+            const url = qs.stringifyUrl({
+                url: `${socketUrl}/${id}`,
+                query: socketQuery,
+            });
+            await axios.patch(url, {
+                content: editingContent
+            })
             setIsEditing(false);
         } catch (error) {
             console.error(error);
+            setIsEditing(false);
+        }
+        finally {
+            setEditingContent(content);
+            setIsLoading(false);
         }
     };
 
-    const handleDelete = async () => {
-        if (!confirm("Are you sure you want to delete this message?")) return;
-        try {
-            await axios.delete(`${socketUrl}/messages/${id}`, { params: socketQuery });
-        } catch (error) {
-            console.error(error);
+    const onMemberClick = () => {
+        if (member.id === currentmember.id) {
+            return;
         }
-    };
+
+        router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+    }
 
     const renderContent = () => {
         if (deleted) {
             return (
                 <p className="italic text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                    {fileUrl ? "Attachment removed" : "Message deleted"}
+                    {fileUrl ? "This attachment has been removed" : "This message has been deleted"}
                 </p>
             );
         }
@@ -158,8 +192,15 @@ const ChatItem = ({
 
         if (isEditing) {
             return (
-                <div className="flex items-center gap-x-2 w-full">
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault(); // prevent page reload
+                        handleUpdate();
+                    }}
+                    className="flex items-center gap-x-2 w-full"
+                >
                     <Input
+                        disabled={isLoading}
                         value={editingContent}
                         onChange={(e) => setEditingContent(e.target.value)}
                         className="flex-1 bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-xs sm:text-sm text-zinc-700 dark:text-zinc-200"
@@ -167,7 +208,7 @@ const ChatItem = ({
                     />
                     <Button
                         size="sm"
-                        onClick={handleUpdate}
+                        type="submit"
                         variant="ghost"
                         className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                     >
@@ -175,13 +216,14 @@ const ChatItem = ({
                     </Button>
                     <Button
                         size="sm"
+                        type="button"
                         onClick={() => setIsEditing(false)}
                         variant="ghost"
                         className="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                     >
                         <X className="h-4 w-4" />
                     </Button>
-                </div>
+                </form>
             );
         }
 
@@ -196,15 +238,17 @@ const ChatItem = ({
     return (
         <div className="relative group flex items-start hover:bg-black/5 p-2 sm:p-3 md:p-4 transition w-full rounded-lg">
             <div className="flex gap-x-2 w-full">
-                <UserAvatar
-                    url={member.profile.imageUrl}
-                    className="h-6 w-6 sm:h-8 sm:w-8"
-                    fallbackData={member.profile.name}
-                />
+                <button onClick={onMemberClick} className="flex items-start cursor-pointer">
+                    <UserAvatar
+                        url={member.profile.imageUrl}
+                        className="h-6 w-6 sm:h-8 sm:w-8"
+                        fallbackData={member.profile.name}
+                    />
+                </button>
                 <div className="flex flex-col w-full">
                     <div className="flex items-center gap-x-2">
                         <div className="flex items-center gap-x-1 sm:gap-x-2">
-                            <p className="font-semibold text-xs sm:text-sm hover:underline cursor-pointer dark:text-zinc-200">
+                            <p onClick={onMemberClick} className="font-semibold text-xs sm:text-sm hover:underline cursor-pointer dark:text-zinc-200">
                                 {member.profile.name}
                             </p>
                             <ActionTooltip label={member.role} side="top" align="start">
@@ -230,7 +274,7 @@ const ChatItem = ({
                         }
                         <div className="flex items-center gap-x-1">
                             <ActionTooltip label="Delete" side="top" >
-                                <Trash className="h-4 w-4" onClick={handleDelete} />
+                                <Trash onClick={() => onOpen("deleteMessage", { apiUrl: `${socketUrl}/${id}`, query: socketQuery })} className="h-4 w-4" />
                             </ActionTooltip>
                         </div>
                     </div>
