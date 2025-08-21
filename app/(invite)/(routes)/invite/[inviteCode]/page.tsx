@@ -3,12 +3,12 @@ import { db } from "@/lib/db";
 import { RedirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-type Props = {
-    params: {
+interface PageProps {
+    params: Promise<{
         inviteCode: string
-    }
+    }>
 }
-const InviteCodePage = async ({ params }: Props) => {
+const InviteCodePage = async ({ params }: PageProps) => {
     const { inviteCode } = await params;
 
     const profile = await CurrentProfile();
