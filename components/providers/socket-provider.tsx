@@ -45,6 +45,7 @@ export const SocketProvider = ({
 
         setSocket(socket);
 
+        // socket clean up
         return () => {
             socket.disconnect();
         };
