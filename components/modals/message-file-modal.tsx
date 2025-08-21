@@ -11,43 +11,53 @@ import {
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
-import { Input } from "../ui/input"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form"
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
 import FileUpload from "../file-upload";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/use-model-store";
+import qs from "query-string";
 
 const formSchema = z.object({
-    name: z.string().min(1, {
-        message: "Server name is required."
-    }),
-    imageUrl: z.string().min(1, {
-        message: "Server image is required."
+    fileUrl: z.string().min(1, {
+        message: "Attachment is required."
     }),
 })
-const InitialModal = () => {
-    const [isMounted, setMounted] = useState(false);
+const MessageFileModal = () => {
 
-    useEffect(() => setMounted(true), []);
+    const { isOpen, onClose, type, data } = useModal();
+    const { apiUrl, query } = data;
+
+    const isModalOpen = isOpen && type === "messageFile";
 
     const router = useRouter()
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            imageUrl: "",
+            fileUrl: "",
         }
     })
+
+    const onCloseModal = () => {
+        form.reset();
+        onClose();
+    }
 
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.post("/api/servers", values);
+            const url = qs.stringifyUrl({
+                url: apiUrl || "",
+                query
+            })
+            await axios.post(url, {
+                ...values,
+                content: values.fileUrl
+            });
             form.reset();
             router.refresh();
-            window.location.reload();
+            onCloseModal();
         }
         catch (err) {
             console.log(err)
@@ -55,18 +65,15 @@ const InitialModal = () => {
         console.log(values);
     }
 
-    if (!isMounted) {
-        return null;
-    }
     return (
-        <Dialog open>
+        <Dialog open={isModalOpen} onOpenChange={onCloseModal}>
             <DialogContent className="p-0 overflow-hidden max-w-md border-3">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Customize your server
+                        Add an Attachment
                     </DialogTitle>
-                    <DialogDescription className="text-center">
-                        Give your server a personality with a name and an image. You can always change it later.
+                    <DialogDescription className="text-center text-zinc-500">
+                        Send a file as a message
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -75,12 +82,12 @@ const InitialModal = () => {
                             <div className="flex items-center justify-center text-center">
                                 <FormField
                                     control={form.control}
-                                    name="imageUrl"
+                                    name="fileUrl"
                                     render={({ field }) => (
                                         <FormItem className="w-full">
                                             <FormControl>
                                                 <FileUpload
-                                                    endpoint="serverImage"
+                                                    endpoint="messageFile"
                                                     value={field.value}
                                                     onChange={field.onChange}
                                                 />
@@ -90,33 +97,13 @@ const InitialModal = () => {
                                     )}
                                 />
                             </div>
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="uppercase text-xs font-bold">
-                                            Server name
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                disabled={isLoading}
-                                                className="border-0 focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-ring"
-                                                placeholder="Enter server name"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                         </div>
-                        <DialogFooter className="px-6 py-4">
+                        <DialogFooter className="px-6 pb-4">
                             <Button
                                 variant="primary"
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Creating..." : "Create"}
+                                {isLoading ? "Sending..." : "Send"}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -126,4 +113,4 @@ const InitialModal = () => {
     )
 }
 
-export default InitialModal
+export default MessageFileModal

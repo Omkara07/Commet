@@ -18,22 +18,10 @@ import Link from "next/link";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
-function Header() {
-  return (
-    <header style={{ display: 'flex', justifyContent: 'space-between', padding: 20 }}>
-      <Link href="/"><h1 className="text-xl font-extrabold">Commet</h1></Link>
-      <div className="flex gap-10">
-        <ModeToggle />
-        <SignedIn>
-          <CustomUserButton />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
-      </div>
-    </header>
-  )
-}
+import ModalProvider from "@/components/providers/modal-provider";
+import { Toaster } from "sonner";
+import { SocketProvider } from "@/components/providers/socket-provider";
+import QueryProvider from "@/components/providers/query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,9 +47,9 @@ export default function RootLayout({
     <ClerkProvider appearance={{
       baseTheme: dark,
     }}>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning className="h-full">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
         >
           <NextSSRPlugin
             routerConfig={extractRouterConfig(ourFileRouter)}
@@ -72,8 +60,13 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Header />
-            {children}
+            <SocketProvider>
+              <ModalProvider />
+              <QueryProvider>
+                {children}
+              </QueryProvider>
+            </SocketProvider>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

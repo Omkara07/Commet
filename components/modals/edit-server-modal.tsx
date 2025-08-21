@@ -14,9 +14,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
 import FileUpload from "../file-upload";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/use-model-store";
+import { useEffect } from "react";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -26,13 +27,13 @@ const formSchema = z.object({
         message: "Server image is required."
     }),
 })
-const InitialModal = () => {
-    const [isMounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
-
+const EditServerModal = () => {
     const router = useRouter()
+    const { isOpen, onClose, type, data } = useModal();
 
+    const { server } = data;
+
+    const isModalOpen = isOpen && type === "editServer";
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -40,30 +41,36 @@ const InitialModal = () => {
             imageUrl: "",
         }
     })
+    useEffect(() => {
+        if (server) {
+            form.setValue("name", server.name);
+            form.setValue("imageUrl", server.imageUrl);
+        }
+    }, [form, server])
 
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.post("/api/servers", values);
+            await axios.patch(`/api/servers/${server?.id}`, values);
             form.reset();
             router.refresh();
-            window.location.reload();
+            onClose();
         }
         catch (err) {
             console.log(err)
         }
         console.log(values);
     }
-
-    if (!isMounted) {
-        return null;
+    const handleClose = () => {
+        form.reset();
+        onClose();
     }
     return (
-        <Dialog open>
+        <Dialog open={isModalOpen} onOpenChange={handleClose}>
             <DialogContent className="p-0 overflow-hidden max-w-md border-3">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Customize your server
+                        Edit your Server
                     </DialogTitle>
                     <DialogDescription className="text-center">
                         Give your server a personality with a name and an image. You can always change it later.
@@ -101,7 +108,7 @@ const InitialModal = () => {
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
-                                                className="border-0 focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-ring"
+                                                className=" border-0 focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-ring"
                                                 placeholder="Enter server name"
                                                 {...field}
                                             />
@@ -111,12 +118,12 @@ const InitialModal = () => {
                                 )}
                             />
                         </div>
-                        <DialogFooter className="px-6 py-4">
+                        <DialogFooter className=" px-6 py-4">
                             <Button
                                 variant="primary"
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Creating..." : "Create"}
+                                {isLoading ? "Saving..." : "Save"}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -126,4 +133,4 @@ const InitialModal = () => {
     )
 }
 
-export default InitialModal
+export default EditServerModal
