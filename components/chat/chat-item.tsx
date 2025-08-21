@@ -28,6 +28,7 @@ interface Props {
     isUpdated: boolean;
     socketUrl: string;
     socketQuery: Record<string, string>;
+    bottomRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const RoleIconMap = {
@@ -47,6 +48,7 @@ const ChatItem = ({
     isUpdated,
     socketUrl,
     socketQuery,
+    bottomRef
 }: Props) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editingContent, setEditingContent] = useState(content);
@@ -165,6 +167,9 @@ const ChatItem = ({
                             alt={fileName}
                             width={400}
                             height={300}
+                            onLoad={() => {
+                                bottomRef?.current?.scrollIntoView({ behavior: "smooth" });
+                            }}
                             className="w-full max-w-[65vw] max-sm:aspect-square sm:max-w-[400px] max-h-64 sm:max-h-96 rounded-lg object-cover border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                         />
                     </a>

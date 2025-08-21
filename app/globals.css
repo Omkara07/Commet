@@ -151,6 +151,15 @@
   /* Add other necessary UploadThing style overrides */
 }
 
+[data-lk-theme="default"] video {
+  max-width: 100%;
+  max-height: 80vh;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-3px); }
