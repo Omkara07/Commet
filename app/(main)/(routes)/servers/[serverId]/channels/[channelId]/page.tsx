@@ -8,10 +8,10 @@ import { ChannelType } from "@/lib/generated/prisma";
 import { RedirectToSignIn } from "@clerk/nextjs";
 
 interface ChannelIdPageProps {
-    params: {
+    params: Promise<{
         serverId: string,
         channelId: string
-    }
+    }>
 }
 const ChannelIdPage = async ({
     params

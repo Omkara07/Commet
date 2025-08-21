@@ -9,16 +9,17 @@ import { RedirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 interface MemberIdPageProps {
-    params: {
+    params: Promise<{
         memberId: string,
         serverId: string
-    },
-    searchParams?: {
+    }>,
+    searchParams: Promise<{
         video: boolean
-    }
+    }>
 }
 const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
     const { memberId, serverId } = await params;
+    const { video } = await searchParams;
     const profile = await CurrentProfile();
 
     if (!profile) return <RedirectToSignIn />
@@ -54,12 +55,12 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
                 imageUrl={otherMember.profile.imageUrl}
             />
             {
-                searchParams?.video && (
+                video && (
                     <MediaRoom chatId={conversation.id} video={true} audio={true} />
                 )
             }
             {
-                !searchParams?.video && (
+                !video && (
                     <>
                         <ChatMessages
                             member={currentMember}
