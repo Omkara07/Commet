@@ -1,6 +1,7 @@
 'use client'
 
 import { SignIn, useUser } from '@clerk/nextjs'
+import { redirect } from 'next/navigation';
 
 export default function Home() {
     const { user } = useUser()
@@ -12,5 +13,5 @@ export default function Home() {
         signUpUrl="/sign-up"
     />
 
-    return <div>Welcome!</div>
+    return redirect('/')
 }
