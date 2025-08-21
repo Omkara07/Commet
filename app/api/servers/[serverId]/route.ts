@@ -2,7 +2,7 @@ import CurrentProfile from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req: Request, { params }: { params: { serverId: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ serverId: string }> }) {
     try {
 
         const { serverId } = await params;
@@ -30,7 +30,7 @@ export async function DELETE(req: Request, { params }: { params: { serverId: str
 
 }
 
-export async function PATCH(req: Request, { params }: { params: { serverId: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ serverId: string }> }) {
     try {
 
         const { serverId } = await params;

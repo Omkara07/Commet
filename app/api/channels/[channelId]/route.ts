@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { channelId: string } }
+    { params }: { params: Promise<{ channelId: string }> }
 ) {
     try {
 
@@ -65,7 +65,7 @@ export async function PATCH(
 }
 export async function DELETE(
     req: Request,
-    { params }: { params: { channelId: string } }
+    { params }: { params: Promise<{ channelId: string }> }
 ) {
     try {
 

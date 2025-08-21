@@ -2,7 +2,7 @@ import CurrentProfile from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req: Request, { params }: { params: { memberId: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ memberId: string }> }) {
     try {
         const profile = await CurrentProfile();
         if (!profile) {
@@ -55,7 +55,7 @@ export async function DELETE(req: Request, { params }: { params: { memberId: str
     }
 }
 
-export async function PATCH(req: Request, { params }: { params: { memberId: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ memberId: string }> }) {
     try {
         const profile = await CurrentProfile();
         if (!profile) {
